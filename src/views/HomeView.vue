@@ -1,18 +1,23 @@
-<template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
-  </div>
-</template>
+<script setup lang="ts">
+import { onMounted } from 'vue';
+import CatsGrid from '@/components/Cats/CatsGrid.vue';
+import { useCatsStore } from '@/store/cats';
+import { useBreedStore } from '@/store/breed';
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-import HelloWorld from '@/components/HelloWorld.vue'; // @ is an alias to /src
 
-export default defineComponent({
-  name: 'HomeView',
-  components: {
-    HelloWorld,
-  },
+const catsStore = useCatsStore();
+const breedStore = useBreedStore();
+
+onMounted(async () => {
+  await catsStore.getUserCats();
+  await breedStore.getBreeds();
 });
+
 </script>
+
+<template>
+  <div v-if="catsStore.loading" class="spinner-border" role="status" color="info">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+  <CatsGrid v-else :cats="catsStore.cats" />
+</template>
